@@ -1,0 +1,87 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Pytest
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Черновики и временные файлы
+drafts/
+temp/
+tmp/
+
+# Превью и выходные файлы
+previews/
+thumbnails/
+output/
+docker_output/
+*.jpg
+*.png
+*.jpeg
+
+# Конфигурационные файлы с секретами
+.env
+.env.local
+.env.*.local
+
+# Docker
+docker-compose.override.yml
+
+# Fly.io
+fly.toml.backup
+
+# Временные файлы тестирования
+test_output/
+test_*.jpg
+test_*.png
+
+# Резервные копии
+*.bak
+backup/
+backups/
+
+# Кеш Playwright
+playwright-cache/
+.playwright/
+
+# Системные файлы
+*.pid
+*.seed
+*.pid.lock

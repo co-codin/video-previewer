@@ -1,0 +1,33 @@
+# fly.toml app configuration file generated for yv-preview on 2025-05-04T15:28:17+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "yv-preview"
+primary_region = "waw"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port       = 8080
+  force_https         = true      # 80 → 443 редирект
+  auto_start_machines = true
+  auto_stop_machines  = true      # ← было "stop"
+  min_machines_running = 0
+  processes           = ["app"]
+
+  # открываем порты наружу
+  [[http_service.ports]]
+    port     = 80
+    handlers = ["http"]
+
+  [[http_service.ports]]
+    port     = 443
+    handlers = ["tls", "http"]
+
+# размер VM
+[[vm]]
+  cpu_kind = "shared"
+  cpus     = 1
+  memory   = "1024mb"             # = 1 GB

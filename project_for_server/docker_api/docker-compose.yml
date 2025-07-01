@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  preview-api:
+    build: 
+      context: ..
+      dockerfile: docker_api/Dockerfile
+    container_name: video-preview-api
+    ports:
+      - "8080:8080"
+    environment:
+      - LOG_LEVEL=INFO
+      - MAX_WORKERS=5
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./previews:/app/previews
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/preview"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
