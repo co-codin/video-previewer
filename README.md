@@ -74,7 +74,8 @@ fly deploy
 
 ```bash
 cd project_for_server/docker_api
-docker-compose up -d
+docker-compose build    # сборка образа
+docker-compose up -d    # запуск сервиса
 ```
 
 [Подробнее о развертывании на VPS →](project_for_server/docker_api/README.md)
@@ -175,13 +176,20 @@ python version_playwright/main_service.py
 ### Сборка образа
 
 ```bash
-docker build -t video-preview-service .
+# Для Fly.io версии
+cd project_for_fly/project
+docker build -t video-preview-fly .
+
+# Для VPS версии используйте docker-compose (см. раздел VPS выше)
 ```
 
 ### Запуск контейнера
 
 ```bash
-docker run -p 8000:8000 video-preview-service
+# Fly.io версия
+docker run -p 8080:8080 video-preview-fly
+
+# VPS версия - используйте docker-compose up
 ```
 
 ## 📚 Клиентские библиотеки

@@ -29,14 +29,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Копирование requirements
-COPY requirements.txt .
+COPY docker_api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Установка браузеров Playwright
 RUN playwright install chromium
 
 # Копирование кода приложения
-COPY app.py .
+COPY docker_api/app.py .
 
 # Создание директории для превью
 RUN mkdir -p /app/previews
