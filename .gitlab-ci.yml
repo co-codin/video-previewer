@@ -37,8 +37,8 @@ Deploy-prod :
    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config 
    - eval USER_HOST=\$SSH_USER_HOST_SERVICES_PROD && ssh ${USER_HOST}  "cd /home/services/video-preview-service && git status && ls -lha"
    - eval USER_HOST=\$SSH_USER_HOST_SERVICES_PROD && ssh ${USER_HOST}  "cd /home/services/video-preview-service && git pull && git switch main"
-   - eval USER_HOST=\$SSH_USER_HOST_SERVICES_PROD && ssh ${USER_HOST}  "cd /home/services/video-preview-service/project_for_server/docker_api && docker compose build"
-   - eval USER_HOST=\$SSH_USER_HOST_SERVICES_PROD && ssh ${USER_HOST}  "cd /home/services/video-preview-service/project_for_server/docker_api && docker compose up -d"
+   - eval USER_HOST=\$SSH_USER_HOST_SERVICES_PROD && ssh ${USER_HOST}  "cd /home/services/video-preview-service/project_for_server/docker_api && docker compose -f docker-compose-prod.yml build"
+   - eval USER_HOST=\$SSH_USER_HOST_SERVICES_PROD && ssh ${USER_HOST}  "cd /home/services/video-preview-service/project_for_server/docker_api && docker compose -f docker-compose-prod.yml up -d"
    - eval USER_HOST=\$SSH_USER_HOST_SERVICES_PROD && ssh ${USER_HOST}  "cd /home/services/video-preview-service/project_for_server/docker_api && docker images -f 'dangling=true' -q | xargs --no-run-if-empty docker rmi" 
  after_script:
    - if [ ${CI_JOB_STATUS} == "success" ]; then EXIT_STATUS=0; else EXIT_STATUS=1; fi 
