@@ -33,7 +33,7 @@ COPY docker_api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Установка браузеров Playwright
-RUN playwright install chromium
+RUN playwright install chromium chrome
 
 # Копирование кода приложения
 COPY docker_api/app.py .
