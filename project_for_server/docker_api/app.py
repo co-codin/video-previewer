@@ -140,7 +140,7 @@ async def generate(urls: List[str]) -> Dict[str, Optional[bytes]]:
 
         browser = await pw.chromium.launch(
             channel="chrome", headless=True,
-            args=["--no-sandbox", "--disable-dev-shm-usage",
+            args=["--headless=new", "--no-sandbox", "--disable-dev-shm-usage",
                   "--ignore-certificate-errors",
                   "--autoplay-policy=no-user-gesture-required"])
 
