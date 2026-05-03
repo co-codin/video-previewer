@@ -4,8 +4,7 @@ import logging
 import os
 from typing import List
 
-# Импортируем новый класс генератора
-from preview_generate_service import PreviewGenerator, PreviewGeneratorError
+from preview_generator import PreviewGenerator, PreviewGeneratorError
 
 # Настройка логирования (можно использовать ту же конфигурацию)
 logging.basicConfig(
