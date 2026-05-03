@@ -92,7 +92,7 @@ setup_server() {
     sudo ufw allow 22/tcp
     sudo ufw allow 80/tcp
     sudo ufw allow 443/tcp
-    sudo ufw allow 8000/tcp
+    sudo ufw allow 8080/tcp
     sudo ufw --force enable
     
     log "Настройка сервера завершена!"
@@ -164,7 +164,7 @@ show_status() {
     docker stats --no-stream $SERVICE_NAME
     echo ""
     log "Проверка здоровья:"
-    curl -s http://localhost:8000/health | jq . || echo "Сервис недоступен"
+    curl -s http://localhost:8080/health | jq . || echo "Сервис недоступен"
 }
 
 # Создание резервной копии
