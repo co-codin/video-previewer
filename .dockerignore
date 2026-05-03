@@ -1,0 +1,54 @@
+# Контекст сборки — корень репо. Здесь — что НЕ попадает в образ.
+
+# Git
+.git
+.gitignore
+.gitlab-ci.yml
+
+# Окружения и секреты
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.pytest_cache
+.mypy_cache
+.venv
+venv
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Логи и выходные артефакты
+*.log
+logs
+previews
+output
+docker_output
+
+# Документация (в образе не нужна)
+README.md
+docs
+
+# Скрипты деплоя
+project_for_server/docker_api/deploy.sh
+
+# Альтернативная реализация — не нужна в образе FastAPI-сервиса
+version_playwright
+
+# Клиенты — это потребители API, в образ не входят
+project_for_fly/client
+project_for_server/client_docker_api
