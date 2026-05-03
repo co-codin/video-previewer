@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/playwright/python:v1.40.0-focal
 
 WORKDIR /app
 
-# Установка системных зависимостей
+# Системные зависимости
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -28,21 +28,17 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Копирование requirements
-COPY docker_api/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Контекст сборки — корень репозитория (см. docker-compose.yml: context: ../..)
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Установка браузеров Playwright
 RUN playwright install chromium chrome
 
-# Копирование кода приложения
-COPY docker_api/app.py .
+COPY previewer_core /app/previewer_core
+COPY project_for_server/docker_api/app.py /app/app.py
 
-# Создание директории для превью
 RUN mkdir -p /app/previews
 
-# Экспорт порта
 EXPOSE 8080
 
-# Запуск FastAPI сервера
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]

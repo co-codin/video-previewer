@@ -8,6 +8,8 @@ primary_region = "waw"
 
 [build]
   dockerfile = "Dockerfile"
+  # Контекст сборки — корень репозитория, чтобы Dockerfile видел previewer_core/.
+  context = "../.."
 
 [http_service]
   internal_port       = 8080

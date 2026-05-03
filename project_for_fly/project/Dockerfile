@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-# базовые утилиты
+# Базовые утилиты
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
         curl ca-certificates gnupg fonts-liberation libu2f-udev libvulkan1
@@ -19,11 +19,14 @@ RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends google-chrome-stable && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ---------- дальше ваш обычный пайплайн ----------
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt && \
+# Контекст сборки — корень репозитория (см. fly.toml: build.context = "../..")
+WORKDIR /app
+
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt && \
     python -m playwright install --with-deps chromium
 
-COPY app.py /app/app.py
-WORKDIR /app
+COPY previewer_core /app/previewer_core
+COPY project_for_fly/project/app.py /app/app.py
+
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]

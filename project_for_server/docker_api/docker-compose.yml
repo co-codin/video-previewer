@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   preview-api:
-    build: 
-      context: ..
-      dockerfile: docker_api/Dockerfile
+    build:
+      context: ../..
+      dockerfile: project_for_server/docker_api/Dockerfile
     container_name: video-preview-api
     ports:
       - "${API_PORT:-8080}:8080"
