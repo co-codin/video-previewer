@@ -4,83 +4,76 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## О проекте
 
-Это сервис для генерации превью-изображений (скриншотов первых кадров) из видео по URL. Проект написан на Python и использует как Selenium (старая версия), так и Playwright (новая версия) для автоматизации браузера.
+Сервис генерации превью-изображений из видео по URL. Полностью на Playwright (Chromium), асинхронный. Доставляется в двух формах: HTTP API (FastAPI) и батч-CLI для офлайн-обработки списков URL.
+
+## Архитектура
+
+### Пакеты
+
+- **`previewer_core/`** — ядро HTTP-сервиса.
+  - `service.py` — FastAPI-приложение, эндпоинты `/health` и `/preview`, фабрика `create_app()`.
+  - `browser.py` — жизненный цикл Playwright и захват кадра/canvas.
+  - `poster.py` — извлечение `og:image` и `video.poster` из HTML.
+  - `image.py`, `http_client.py`, `config.py` — утилиты.
+
+- **`previewer_client/`** — клиентская библиотека для обращения к API.
+  - `client.py` — `VideoPreviewClient` (async + sync враппер).
+
+- **`version_playwright/`** — самостоятельный батч-генератор (НЕ интегрирован с `previewer_core`).
+  - `main_service.py` — точка входа для тестов.
+  - `preview_generator/` — модули `generator.py`, `video_capture.py`, `poster_extractor.py`, `consent.py` (YouTube cookie), `image_io.py`, `filename.py`, `constants.py`, `exceptions.py`.
+
+### Деплой-таргеты
+
+- **`project_for_fly/`** — Fly.io. `project/app.py` импортирует `previewer_core.create_app()`; `client/` — тонкий враппер над `previewer_client` с дефолтным URL Fly.
+- **`project_for_server/`** — Docker Compose / удалённый сервер. `docker_api/app.py` идентичен Fly-варианту; `client_docker_api/` — клиент-обёртка с локальным URL по умолчанию.
+
+⚠️ `project_for_fly/client` и `project_for_server/client_docker_api` сейчас почти дубликаты `previewer_client` — кандидат на консолидацию.
 
 ## Основные команды
 
-### Запуск сервиса
+### Запуск HTTP-сервиса
 
 ```bash
-# Основной скрипт (использует Selenium)
-python main.py --urls https://example.com/video1 --width 640
+# Локально (uvicorn)
+uvicorn previewer_core.service:create_app --factory --host 0.0.0.0 --port 8080
+```
 
-# Версия с Playwright
+### Запуск батч-CLI
+
+```bash
 python version_playwright/main_service.py
-
-# FastAPI сервис
-python client_preview_service.py
 ```
 
-### Docker
+### Docker (project_for_server)
 
 ```bash
-# Сборка образа
-docker build -t preview-generator .
-
-# Запуск контейнера
-docker run --rm \
-    -v "$(pwd)/test_urls.json:/app/test_urls.json" \
-    -v "$(pwd)/output:/app/previews" \
-    preview-generator \
-    --input-file test_urls.json \
-    --output-dir previews
-
-# Тестирование Docker
-chmod +x docker_test.sh
-./docker_test.sh
+cd project_for_server/docker_api
+docker-compose up -d --build
+docker-compose logs -f
 ```
+
+Healthcheck контейнера: `GET /health`.
 
 ### Установка зависимостей
 
 ```bash
 pip install -r requirements.txt
-
-# Для Playwright также нужно установить браузеры
 playwright install chromium
 ```
 
-## Архитектура
-
-### Основные компоненты
-
-1. **generate_preview_service.py** - старая версия с Selenium для генерации превью
-2. **version_playwright/** - новая версия с Playwright:
-   - `preview_generate_service.py` - основной класс PreviewGenerator
-   - `main_service.py` - точка входа для тестирования
-3. **client_preview_service.py** - FastAPI сервис для HTTP API
-4. **docs/preview_generator_plan.md** - план оптимизации (извлечение постеров вместо скриншотов)
-
-### Ключевые особенности
-
-- Асинхронная обработка списков URL
-- Параллельная обработка с ограничением количества воркеров
-- Поддержка извлечения готовых постеров (og:image, video.poster)
-- Обработка YouTube cookie consent
-- Автоматическое изменение размера изображений
-- Детальное логирование
-
-### Различия между версиями
-
-- **Selenium версия**: использует webdriver.Chrome, синхронный подход с ThreadPoolExecutor
-- **Playwright версия**: полностью асинхронная, поддержка разных браузеров, более быстрая работа
-
 ## Важные моменты при разработке
 
-1. **Обработка ошибок**: Всегда возвращать результат для каждого URL, даже при ошибке (url, None)
-2. **Таймауты**: Использовать разумные таймауты для загрузки страниц и элементов
-3. **User-Agent**: Установлен для избежания блокировок
-4. **Cookie Consent**: Специальная обработка для YouTube
-5. **Логирование**: Использовать logger вместо print для отладки
+1. **Обработка ошибок**: всегда возвращать результат для каждого URL, даже при ошибке (`url, None`).
+2. **Таймауты**: использовать разумные значения для загрузки страниц и элементов.
+3. **User-Agent**: устанавливается явно, чтобы не нарваться на блокировки.
+4. **Cookie Consent**: для YouTube — специальная обработка в `version_playwright/preview_generator/consent.py`.
+5. **Логирование**: `logger`, а не `print`.
+6. **Тестов нет** — перед любым крупным рефакторингом стоит добавить хотя бы smoke-тесты на `/health` и `/preview` и юнит на `poster.py`.
+
+## Документация
+
+- `docs/preview_generator_plan.md` — план оптимизации (извлечение готовых постеров вместо скриншотов).
 
 ## Язык общения
 
